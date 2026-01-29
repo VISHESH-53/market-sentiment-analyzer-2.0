@@ -186,6 +186,51 @@ st.subheader("📉 Strategy Backtesting")
 
 bt_df = backtest_strategy(features_df, cost=0.001)
 
+
+
+fig_bt = go.Figure()
+fig_bt.add_trace(go.Scatter(y=bt_df["cum_strategy"], name="AI Strategy"))
+fig_bt.add_trace(go.Scatter(y=bt_df["cum_market"], name="Buy & Hold"))
+
+fig_bt.update_layout(
+    template="plotly_dark",
+    xaxis_title="Time",
+    yaxis_title="Cumulative Return",
+)
+
+st.plotly_chart(fig_bt, use_container_width=True)
+st.subheader("🔥 Volatility Regime Analysis")
+
+# Create volatility regimes using quantiles
+bt_df["vol_regime"] = pd.qcut(
+    bt_df["volatility"],
+    q=3,
+    labels=["Low Volatility", "Medium Volatility", "High Volatility"]
+)
+regime_returns = (
+    bt_df
+    .groupby("vol_regime")["strategy_return"]
+    .mean()
+    .reset_index()
+)
+fig_regime = go.Figure(
+    data=go.Heatmap(
+        z=[regime_returns["strategy_return"]],
+        x=regime_returns["vol_regime"],
+        y=["Avg Strategy Return"],
+        colorscale="RdYlGn",
+        zmid=0
+    )
+)
+
+fig_regime.update_layout(
+    template="plotly_dark",
+    title="Strategy Performance Across Volatility Regimes"
+)
+
+st.plotly_chart(fig_regime, use_container_width=True)
+
+
 # ================== PIE CHARTS FOR REPORT ==================
 
 # Prediction distribution
@@ -223,18 +268,6 @@ report_assets.save_pie_chart(
     "trade_outcomes.png"
 )
 
-
-fig_bt = go.Figure()
-fig_bt.add_trace(go.Scatter(y=bt_df["cum_strategy"], name="AI Strategy"))
-fig_bt.add_trace(go.Scatter(y=bt_df["cum_market"], name="Buy & Hold"))
-
-fig_bt.update_layout(
-    template="plotly_dark",
-    xaxis_title="Time",
-    yaxis_title="Cumulative Return",
-)
-
-st.plotly_chart(fig_bt, use_container_width=True)
 
 # ================== TRADE OUTCOME DISTRIBUTION ==================
 st.subheader("🥧 Trade Outcome Distribution")
