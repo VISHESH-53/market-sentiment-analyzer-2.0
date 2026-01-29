@@ -94,6 +94,25 @@ def generate_research_report(
     story.append(Spacer(1, 12))
     story.append(Image(equity_curve_path, width=400, height=300))
     story.append(Spacer(1, 12))
+    # ---------- PIE CHART ANALYSIS ----------
+    story.append(PageBreak())
+    story.append(Paragraph("8. Strategy Distribution Analysis", styles["Heading2"]))
+    story.append(Spacer(1, 12))
+    
+    story.append(Paragraph(
+        "The following charts summarize the model’s behavior in terms of prediction "
+        "bias and realized trade outcomes.",
+        styles["Normal"]
+    ))
+    story.append(Spacer(1, 12))
+    
+    story.append(Paragraph("Prediction Distribution", styles["Heading3"]))
+    story.append(Image("prediction_distribution.png", width=300, height=300))
+    story.append(Spacer(1, 20))
+    
+    story.append(Paragraph("Trade Outcome Distribution", styles["Heading3"]))
+    story.append(Image("trade_outcomes.png", width=300, height=300))
+    story.append(Spacer(1, 20))
 
     # ---------- RISK METRICS ----------
     story.append(Paragraph("7. Risk Analysis", styles["Heading2"]))
