@@ -186,6 +186,44 @@ st.subheader("📉 Strategy Backtesting")
 
 bt_df = backtest_strategy(features_df, cost=0.001)
 
+# ================== PIE CHARTS FOR REPORT ==================
+
+# Prediction distribution
+pred_counts = features_df["prediction"].value_counts(dropna=True)
+
+pred_labels = []
+pred_values = []
+
+if 1 in pred_counts:
+    pred_labels.append("Bullish")
+    pred_values.append(pred_counts[1])
+
+if 0 in pred_counts:
+    pred_labels.append("Bearish")
+    pred_values.append(pred_counts[0])
+
+report_assets.save_pie_chart(
+    pred_labels,
+    pred_values,
+    "Prediction Distribution",
+    "prediction_distribution.png"
+)
+
+# Trade outcome distribution
+trade_outcomes = bt_df["strategy_return"].apply(
+    lambda x: "Winning" if x > 0 else ("Losing" if x < 0 else "No Trade")
+)
+
+outcome_counts = trade_outcomes.value_counts()
+
+report_assets.save_pie_chart(
+    outcome_counts.index.tolist(),
+    outcome_counts.values.tolist(),
+    "Trade Outcome Distribution",
+    "trade_outcomes.png"
+)
+
+
 fig_bt = go.Figure()
 fig_bt.add_trace(go.Scatter(y=bt_df["cum_strategy"], name="AI Strategy"))
 fig_bt.add_trace(go.Scatter(y=bt_df["cum_market"], name="Buy & Hold"))
