@@ -50,8 +50,10 @@ symbol = st.sidebar.text_input("Enter Stock / Crypto Symbol", value="AAPL")
 
 period = st.sidebar.selectbox(
     "Select Time Period",
-    ["5d", "1mo", "3mo", "6mo", "1y"]
+    ["5d", "1mo", "3mo", "6mo", "1y"],
+    index=4   # default = "1y"
 )
+
 
 # ================== MARKET DATA ==================
 data = fetch_market_data(symbol, period)
