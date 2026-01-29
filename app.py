@@ -138,7 +138,8 @@ if pd.isna(prediction):
     st.warning("Not enough data for AI prediction. Use 6mo or 1y.")
     st.stop()
 
-signal = generate_signal(prediction, latest_confidence)
+signal = generate_signal(prediction, latest_confidence, threshold=0.60)
+
 
 col1, col2, col3, col4 = st.columns(4)
 col1.metric("Model", model_choice)
