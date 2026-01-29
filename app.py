@@ -147,6 +147,39 @@ col3.metric("Confidence", f"{latest_confidence:.2f}")
 col4.metric("Trade Signal", signal)
 
 st.caption("Model evaluated using walk-forward validation")
+# ================== PREDICTION DISTRIBUTION ==================
+st.subheader("🥧 Prediction Distribution")
+
+pred_counts = features_df["prediction"].value_counts(dropna=True)
+
+labels = []
+values = []
+
+if 1 in pred_counts:
+    labels.append("Bullish")
+    values.append(pred_counts[1])
+
+if 0 in pred_counts:
+    labels.append("Bearish")
+    values.append(pred_counts[0])
+
+fig_pred_pie = go.Figure(
+    data=[
+        go.Pie(
+            labels=labels,
+            values=values,
+            hole=0.4
+        )
+    ]
+)
+
+fig_pred_pie.update_layout(
+    template="plotly_dark",
+    title="Model Prediction Distribution"
+)
+
+st.plotly_chart(fig_pred_pie, use_container_width=True)
+
 
 # ================== BACKTESTING ==================
 st.subheader("📉 Strategy Backtesting")
@@ -164,6 +197,33 @@ fig_bt.update_layout(
 )
 
 st.plotly_chart(fig_bt, use_container_width=True)
+
+# ================== TRADE OUTCOME DISTRIBUTION ==================
+st.subheader("🥧 Trade Outcome Distribution")
+
+trade_outcomes = bt_df["strategy_return"].apply(
+    lambda x: "Winning Trade" if x > 0 else ("Losing Trade" if x < 0 else "No Trade")
+)
+
+outcome_counts = trade_outcomes.value_counts()
+
+fig_trade_pie = go.Figure(
+    data=[
+        go.Pie(
+            labels=outcome_counts.index,
+            values=outcome_counts.values,
+            hole=0.4
+        )
+    ]
+)
+
+fig_trade_pie.update_layout(
+    template="plotly_dark",
+    title="Trade Outcome Distribution"
+)
+
+st.plotly_chart(fig_trade_pie, use_container_width=True)
+
 
 # ================== RISK METRICS ==================
 st.subheader("📊 Risk Metrics")
