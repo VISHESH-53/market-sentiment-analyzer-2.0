@@ -6,6 +6,16 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from datetime import datetime
 
+import os
+
+if not os.path.exists("equity_curve.png"):
+    st.error("Equity curve image not found")
+else:
+    report_generator.generate_research_report(
+        filename=f"{symbol}_research_report.pdf",
+        equity_curve_path="equity_curve.png"
+    )
+
 def generate_research_report(
     filename,
     symbol,
