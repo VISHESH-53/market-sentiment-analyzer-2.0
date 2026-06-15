@@ -1,19 +1,31 @@
-import random
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
 
-FEATURES = [
-    "return",
-    "volatility",
-    "sentiment",
-    "ma5",
-    "ma10",
-    "momentum",
-    "volume_change",
-    "ma_ratio",
-    "price_vs_ma5"
-]
+def evaluate_chromosome(df, chromosome):
+    selected = decode(chromosome)
 
-def random_chromosome():
-    return [
-        random.randint(0, 1)
-        for _ in FEATURES
-    ]
+    if len(selected) == 0:
+        return 0
+
+    X = df[selected]
+    y = df["target"]
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X,
+        y,
+        test_size=0.2,
+        shuffle=False
+    )
+
+    model = RandomForestClassifier(
+        n_estimators=100,
+        max_depth=5,
+        random_state=42
+    )
+
+    model.fit(X_train, y_train)
+
+    preds = model.predict(X_test)
+
+    return accuracy_score(y_test, preds)
