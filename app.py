@@ -2,6 +2,7 @@
 import sys
 import os
 import importlib.util
+from core.ga_optimizer import ga_feature_selection
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 if PROJECT_ROOT not in sys.path:
@@ -129,9 +130,24 @@ model_choice = st.selectbox(
 
 model_type = "rf" if model_choice == "Random Forest" else "lr"
 
-features_df = create_features(data, avg_sentiment)
+features_df = create_features(
+    data,
+    avg_sentiment
+)
 
-wf_df = walk_forward_validation(features_df, model_type)
+best_features = ga_feature_selection(
+    features_df
+)
+
+st.success(
+    f"🧬 GA Selected Features: {', '.join(best_features)}"
+)
+
+wf_df = walk_forward_validation(
+    features_df,
+    model_type,
+    feature_columns=best_features
+)
 
 prediction = wf_df["prediction"].iloc[-1]
 confidence = wf_df["confidence"].iloc[-1]
