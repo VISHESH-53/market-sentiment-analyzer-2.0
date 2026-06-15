@@ -131,7 +131,15 @@ model_type = "rf" if model_choice == "Random Forest" else "lr"
 
 features_df = create_features(data, avg_sentiment)
 
-wf_df = walk_forward_validation(features_df, model_type)
+selected_features = ga_feature_selection(
+    features_df,
+    model_type
+)
+
+wf_df = walk_forward_validation(
+    features_df[selected_features],
+    model_type
+)
 
 prediction = wf_df["prediction"].iloc[-1]
 confidence = wf_df["confidence"].iloc[-1]
