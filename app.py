@@ -130,6 +130,7 @@ model_choice = st.selectbox(
 model_type = "rf" if model_choice == "Random Forest" else "lr"
 
 features_df = create_features(data, avg_sentiment)
+
 wf_df = walk_forward_validation(features_df, model_type)
 
 prediction = wf_df["prediction"].iloc[-1]
