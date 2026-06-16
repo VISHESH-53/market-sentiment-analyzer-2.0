@@ -73,6 +73,31 @@ def generate_research_report(
     )
 
     story.append(PageBreak())
+    dashboard_data = [
+    ["Metric", "Value"],
+    ["Prediction", prediction],
+    ["Signal", signal],
+    ["Confidence", f"{confidence:.2%}" if confidence is not None else "N/A"],
+    ["Sharpe Ratio", f"{sharpe:.2f}"],
+    ["Max Drawdown", f"{drawdown:.2%}"]]
+
+    dashboard = Table(dashboard_data)
+    
+    dashboard.setStyle(TableStyle([
+        ("BACKGROUND",(0,0),(-1,0),colors.darkblue),
+        ("TEXTCOLOR",(0,0),(-1,0),colors.white),
+        ("GRID",(0,0),(-1,-1),1,colors.black)
+    ]))
+    
+    story.append(
+        Paragraph(
+            "Executive Dashboard",
+            styles["Heading2"]
+        )
+    )
+    
+    story.append(dashboard)
+    story.append(Spacer(1,20))
 
     # ---------- EXECUTIVE SUMMARY ----------
 
@@ -125,6 +150,46 @@ def generate_research_report(
 
     story.append(Spacer(1,12))
 
+
+    story.append(
+    Paragraph(
+        "4. Evolutionary Optimization",
+        styles["Heading2"]
+    )
+)
+    
+    story.append(
+        Paragraph(
+            """
+            A Genetic Algorithm was used to
+            optimize feature selection and
+            identify the most informative
+            predictors for market forecasting.
+            """,
+            styles["Normal"]
+        )
+    )
+    
+    if selected_features:
+    
+        for feature in selected_features:
+    
+            story.append(
+                Paragraph(
+                    f"✓ {feature}",
+                    styles["Normal"]
+                )
+            )
+    
+    story.append(
+        safe_image(
+            ga_features_path,
+            400,
+            250,
+            styles
+        )
+    )
+
     # ---------- MODEL ----------
 
     story.append(
@@ -141,6 +206,24 @@ def generate_research_report(
 
     story.append(Spacer(1,12))
 
+    story.append(
+    Paragraph(
+        "Feature Importance Analysis",
+        styles["Heading2"]
+    )
+)
+
+    story.append(
+        safe_image(
+            feature_importance_path,
+            450,
+            250,
+            styles
+        )
+    )
+    
+    story.append(Spacer(1,12))
+
     # ---------- STRATEGY ----------
 
     story.append(
@@ -155,6 +238,23 @@ def generate_research_report(
         )
     )
 
+    story.append(Spacer(1,12))
+    story.append(
+    Paragraph(
+        "Prediction Confidence",
+        styles["Heading2"]
+    )
+)
+
+    story.append(
+        safe_image(
+            confidence_chart_path,
+            400,
+            120,
+            styles
+        )
+    )
+    
     story.append(Spacer(1,12))
 
     # ---------- BACKTESTING ----------
@@ -220,7 +320,21 @@ def generate_research_report(
     story.append(Spacer(1,20))
 
     # ---------- RISK ----------
+    if drawdown > -0.10:
+    risk_level = "LOW"
 
+    elif drawdown > -0.20:
+        risk_level = "MEDIUM"
+    
+    else:
+        risk_level = "HIGH"
+    
+    story.append(
+        Paragraph(
+            f"Risk Classification: {risk_level}",
+            styles["Heading3"]
+        )
+    )
     story.append(
         Paragraph("8. Risk Analysis",styles["Heading2"])
     )
@@ -257,17 +371,28 @@ def generate_research_report(
         Paragraph("9. Strategy Comparison",styles["Heading2"])
     )
 
-    table_data = [
+table_data = [
 
-        ["Metric","AI Strategy","Buy & Hold"],
+    ["Metric","AI Strategy","Buy & Hold"],
 
-        ["Sharpe Ratio",sharpe_text,"N/A"],
+    [
+        "Return",
+        f"{strategy_return:.2%}" if strategy_return is not None else "N/A",
+        f"{market_return:.2%}" if market_return is not None else "N/A"
+    ],
 
-        ["Max Drawdown",drawdown_text,"Market dependent"],
+    [
+        "Sharpe Ratio",
+        f"{sharpe:.2f}",
+        "-"
+    ],
 
-        ["Decision Type","AI driven","Passive"]
-
+    [
+        "Max Drawdown",
+        f"{drawdown:.2%}",
+        "-"
     ]
+]
 
     table = Table(table_data)
 
@@ -305,6 +430,34 @@ def generate_research_report(
     )
 
     story.append(Spacer(1,12))
+    story.append(
+    Paragraph(
+        "AI Commentary",
+        styles["Heading2"]
+    )
+)
+
+    commentary = f"""
+    The machine learning system indicates
+    a {prediction.lower()} market outlook.
+    
+    The generated signal is {signal}.
+    
+    The evolutionary optimization engine
+    selected {len(selected_features) if selected_features else 0}
+    high-value features.
+    
+    Risk-adjusted performance remains
+    stable with a Sharpe Ratio of
+    {sharpe:.2f}.
+    """
+    
+    story.append(
+        Paragraph(
+            commentary,
+            styles["Normal"]
+        )
+    )
 
     # ---------- CONCLUSION ----------
 
